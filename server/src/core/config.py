@@ -66,6 +66,7 @@ class Settings(BaseSettings):
 
     # END OF POSTGRES SETTINGS
 
+    VK_SERVICE_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=Path(__file__).parent.parent.parent.joinpath(env_file)
