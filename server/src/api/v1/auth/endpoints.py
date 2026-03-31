@@ -44,7 +44,7 @@ async def login(
         "isSuperuser": user.is_superuser
     })
 
-    response = JSONResponse({"accessToken": token})  # TODO: redirect
+    response = JSONResponse("Successfully authorized")  # TODO: redirect
     response.set_cookie(
         key="accessToken",
         value=token,
@@ -80,9 +80,10 @@ async def register(
     token, expire = create_access_token({
         "username": user.username,
         "email": user.email,
+        "isSuperuser": user.is_superuser
     })
 
-    response = JSONResponse({"accessToken": token})  # TODO: redirect
+    response = JSONResponse("Successfully registered")  # TODO: redirect
     response.set_cookie(
         key="accessToken",
         value=token,

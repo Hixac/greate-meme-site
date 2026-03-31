@@ -2,7 +2,6 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
 
 from src.core.database import AsyncSession, get_db_session
 from .schemas import UserCreate, UserResponse

@@ -1,13 +1,9 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import datetime, UTC
 
 
-mow_tz = ZoneInfo('Europe/Moscow')
-
-
-def mow_now() -> datetime:
-    return datetime.now(mow_tz)
+def utc_now() -> datetime:
+    return datetime.now(UTC)
 
 
 def generate_uuid() -> uuid.UUID:

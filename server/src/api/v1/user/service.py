@@ -2,7 +2,7 @@ from uuid import UUID
 import structlog
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
-from src.core.exceptions import ResourceNotFound
+from src.core.exceptions import ResourceAlreadyExists, ResourceNotFound
 from src.core.database import AsyncSession
 from src.core.security import hash_password
 from src.api.v1.user.repository import UserRepository
@@ -25,18 +25,21 @@ class UserService:
     ) -> UserResponse:
         repo = UserRepository.from_session(session)
 
+        if await repo.get_by_email(email) is not None:
+            raise ResourceAlreadyExists()
+
         try:
             user = await repo.create(User(
                 username=username,
                 email=email,
                 hashed_password=hash_password(password)
             ), flush=True)
-
-            LOGGER.info("user.create.success")
-            return UserResponse(email=user.email, username=user.username)
-        except IntegrityError as _:
+        except IntegrityError:
             LOGGER.warning("user.create.constraint_violation")  # only raises if email duplicate
-            raise
+            raise ResourceAlreadyExists()
+
+        LOGGER.info("user.create.success")
+        return UserResponse(email=user.email, username=user.username)
 
     async def get(
         self,

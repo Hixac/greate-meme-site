@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import TIMESTAMP, Uuid, inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from src.core.utilities import mow_now, generate_uuid
+from src.core.utilities import utc_now, generate_uuid
 
 
 class Model(DeclarativeBase):
@@ -16,20 +16,20 @@ class TimestampedModel(Model):
     __abstract__ = True
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), nullable=False, default=mow_now, index=True
+        TIMESTAMP(timezone=True), nullable=False, default=utc_now, index=True
     )
     modified_at: Mapped[datetime | None] = mapped_column(
-        TIMESTAMP(timezone=True), onupdate=mow_now, nullable=True, default=None
+        TIMESTAMP(timezone=True), onupdate=utc_now, nullable=True, default=None
     )
     deleted_at: Mapped[datetime | None] = mapped_column(
         TIMESTAMP(timezone=True), nullable=True, default=None, index=True
     )
 
     def set_modified_at(self) -> None:
-        self.modified_at = mow_now()
+        self.modified_at = utc_now()
 
     def set_deleted_at(self) -> None:
-        self.deleted_at = mow_now()
+        self.deleted_at = utc_now()
 
 
 class IDModel(Model):

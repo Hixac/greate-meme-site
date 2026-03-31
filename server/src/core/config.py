@@ -1,18 +1,10 @@
 import os
-from enum import StrEnum
 from pathlib import Path
 
 from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-ENV_VAR: str = "GMS_ENV"
-
-
-class Environment(StrEnum):
-    test = "test"
-    production = "production"
-    development = "development"
+from src.core.constants import Environment, ENV_VAR
 
 
 env = Environment(os.getenv(ENV_VAR, Environment.development))
@@ -35,7 +27,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str
     WWW_AUTHENTICATE_REALM: str = "gms"
 
-    CORS_ORIGINS: list[str] | None = None
+    CORS_ORIGINS: list[str]
 
 
     # POSTGRES SETTINGS
@@ -66,12 +58,16 @@ class Settings(BaseSettings):
 
     # END OF POSTGRES SETTINGS
 
+
     VK_SERVICE_KEY: str
 
+
     # JWT SETTINGS
+
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
+
 
     model_config = SettingsConfigDict(
         env_file=Path(__file__).parent.parent.parent.joinpath(env_file)

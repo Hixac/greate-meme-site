@@ -5,8 +5,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.core.database import AsyncEngine, SyncEngine, AsyncSessionMaker, SyncSessionMaker
-from src.core.database import create_sync_engine, create_async_engine, create_sync_sessionmaker, create_async_sessionmaker
+from src.core.database import (
+    AsyncEngine, SyncEngine, AsyncSessionMaker, SyncSessionMaker,
+    create_sync_engine, create_async_engine, create_sync_sessionmaker, create_async_sessionmaker,
+    AsyncSessionMiddleware
+)
 from src.core.config import settings
 from src.core.exception_handlers import add_exception_handlers
 from src.core.logger import structlog  # pyright: ignore[reportPrivateLocalImportUsage]
@@ -24,7 +27,7 @@ class State(TypedDict):
 
 @asynccontextmanager
 async def lifespan(api: FastAPI) -> AsyncIterator[State]:  # pyright: ignore[reportUnusedParameter]
-    LOGGER.info("Starting manyS API")
+    LOGGER.info("Starting GMS API")
 
     async_engine = create_async_engine("app")
     async_sessionmaker = create_async_sessionmaker(async_engine)
@@ -42,7 +45,7 @@ async def lifespan(api: FastAPI) -> AsyncIterator[State]:  # pyright: ignore[rep
     await async_engine.dispose()
     sync_engine.dispose()
 
-    LOGGER.info("manyS API stopped")
+    LOGGER.info("GMS API stopped")
 
 
 def create_application(router: APIRouter) -> FastAPI:
@@ -50,15 +53,14 @@ def create_application(router: APIRouter) -> FastAPI:
     app.include_router(router)
 
     if not settings.is_test():
-        pass
-    if settings.CORS_ORIGINS is not None:
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=settings.CORS_ORIGINS,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+        app.add_middleware(AsyncSessionMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     add_exception_handlers(app)
 

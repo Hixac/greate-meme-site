@@ -8,7 +8,7 @@ from bcrypt import (
     checkpw
 )
 from src.core.config import settings
-from src.core.utilities import mow_now
+from src.core.utilities import utc_now
 
 
 def hash_password(password: str) -> str:
@@ -45,10 +45,10 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     to_encode = data.copy()
 
     if expires_delta:
-        expire = mow_now() + expires_delta
+        expire = utc_now() + expires_delta
     else:
-        expire = mow_now()  + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = utc_now()  + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    to_encode.update({"expireAt": expire})
+    to_encode.update({"expireAt": expire.isoformat()})
     encoded_jwt = jwt_encode(to_encode)
     return encoded_jwt, expire
