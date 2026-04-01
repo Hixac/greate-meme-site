@@ -1,4 +1,3 @@
-import { Group } from '@mui/icons-material';
 import axios from 'axios';
 
 const api = axios.create({
@@ -10,7 +9,7 @@ const api = axios.create({
 
 export default api;
 
-export async function vkGetPosts(group: string, count: number = 1, offset: number = 0) {
+export async function vkGetPosts(group: string, count: number = 5, offset: number = 0) {
   try {
     const response = await api.get("/vk/wall", {
       params: {
