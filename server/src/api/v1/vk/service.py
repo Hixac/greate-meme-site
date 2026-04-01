@@ -24,7 +24,7 @@ class VKService:
                 self._route(route),
                 params={
                     "access_token": self.access_token,
-                    "v": "5.131"
+                    "v": "5.199"
                 } | kwargs
             )
 
@@ -34,22 +34,23 @@ class VKService:
             group_id=group,
         )
         content = response.json()
-        content = content["response"][0]
+        content = content["response"]["groups"][0]
         return VKPublisher(
             name=content["name"],
             photo_url=content["photo_50"]
         )
 
-    async def get_posts(self, domain: str, offset: int = 0, count: int = 1) -> list[VKPost]:
+    async def get_posts(self, domain: str, count: int, offset: int) -> list[VKPost]:
         response = await self.vk_request(
             "wall.get",
             domain=domain,
-            offset=offset,
             count=count,
+            offset=offset,
         )
         content = response.json()
 
         vkposts: list[VKPost] = []
+        publisher = await self.get_group(domain)
         for item in content["response"]["items"]:
             photos_url: list[str] | None = []
 
@@ -71,7 +72,7 @@ class VKService:
                     is_pinned=True if "is_pinned" in item and item["is_pinned"] else False,
                     text=item["text"],
                     photos_url=photos_url,
-                    publisher=await self.get_group(domain)
+                    publisher=publisher
                 ))
 
         return vkposts
