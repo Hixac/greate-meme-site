@@ -1,6 +1,6 @@
 services:
 
-  database:
+  gms-database:
     image: postgres:18-trixie
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

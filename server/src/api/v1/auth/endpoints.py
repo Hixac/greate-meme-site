@@ -33,7 +33,11 @@ async def login(
     auth: AuthLoginSchema,
     session: Annotated[AsyncSession, Depends(get_db_session)]
 ) -> JSONResponse:
-    user = await auth_service.login(session, email=auth.email, password=auth.password)
+    user = await auth_service.login(
+        session,
+        email=auth.email,
+        password=auth.password.get_secret_value()
+    )
 
     if user is None:
         raise Unauthorized("Wrong email or password")
@@ -75,7 +79,7 @@ async def register(
         session,
         username=auth.username,
         email=auth.email,
-        password=auth.password
+        password=auth.password.get_secret_value()
     )
     token, expire = create_access_token({
         "username": user.username,

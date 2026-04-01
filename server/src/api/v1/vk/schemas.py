@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from src.core.schemas import IDSchema
 
 
-class VKPublisher(BaseModel):
+class VKPublisher(IDSchema):
     photo_url: str | None
     name: str
 
 
-class VKPost(BaseModel):
+class VKPost(IDSchema):
     likes: int           # response["items"][...]["likes"]["count"]
     reposts: int         # response["items"][...]["resposts"]["count"]
     views: int           # response["items"][...]["views"]["count"]
