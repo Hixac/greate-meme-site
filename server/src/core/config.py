@@ -61,6 +61,10 @@ class Settings(BaseSettings):
 
     VK_SERVICE_KEY: str
 
+    REDDIT_CLIENT_ID: str
+    REDDIT_CLIENT_SECRET: str
+    REDDIT_USER_AGENT: str
+
 
     # JWT SETTINGS
 
